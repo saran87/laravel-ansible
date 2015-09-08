@@ -1,0 +1,20 @@
+# Provision and deploy webapplication
+---
+- name: Provision webserver
+  hosts: webserver
+  remote_user: root
+  gather_facts: True
+  vars_prompt:
+    - name: common_public_key
+      prompt: "Location of public ssh key to add to webservers"
+      default: "{{ lookup('env','HOME') }}/.ssh/id_rsa.pub"
+  roles:
+    - role: ubuntu
+      tags: server
+    - role: user
+      admin_password: "{{ lookup('password', '.tmp/admin_password chars=ascii_letters,digits,hexdigits length=10') }}"
+      deploy_password: "{{ lookup('password', '.tmp/deploy_password chars=ascii_letters,digits,hexdigits length=10') }}"
+      tags: user
+    - role: php
+      tags: php
+
